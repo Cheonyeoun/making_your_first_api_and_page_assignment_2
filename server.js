@@ -1,56 +1,126 @@
 // Boilerplate Code for HTTP Status Code API
 const express = require('express');
+const { stat } = require('fs');
 const app = express();
+app.use(express.json());
 
-/*
-Task:
-You need to create an API that helps users understand different HTTP status codes and their meanings.
+app.get('/',(req,res)=>{
+  return res.send({message:"Hye There Welcome To The Server!"})
+})
 
-Requirements:
-1. Create a GET endpoint at "/status-info".
-2. The endpoint should accept a "code" as a query parameter (e.g., /status-info?code=200).
-3. Based on the status code provided, the API should respond with:
-   a. The status code.
-   b. A description of the status code.
+app.get('/status-info', async(req,res)=>{
+  
+  const status = req.query.code;
 
-Example Responses:
-- For 200 (OK):
-  Request: /status-info?code=200
-  Response:
-  {
-    "status": 200,
-    "message": "OK: The request has succeeded. The meaning of this status depends on the HTTP method used."
+  let Response =   {
+    "status": "listening",
+    "message": "Response"
   }
 
-- For 404 (Not Found):
-  Request: /status-info?code=404
-  Response:
-  {
-    "status": 404,
-    "message": "Not Found: The server has not found anything matching the request URI. This is often caused by a missing page or resource."
-  }
+  if (status === '200') {
+    Response = {
+      status: 200,
+      message: "OK: The request has succeeded. The meaning of this status depends on the HTTP method used."
+    };
+  } else if (status === '201') {
+    Response = {
+      status: 201,
+      message: "Created: The request has succeeded and a new resource has been created as a result."
+    };
+  } else if (status === '204') {
+    Response = {
+      status: 204,
+      message: "No Content: The server successfully processed the request and is not returning any content."
+    };
+  } else if (status === '400') {
+    Response = {
+      status: 400,
+      message: "Bad Request: The server cannot process the request due to client-side errors (e.g., malformed syntax)."
+    };
+  } else if (status === '401') {
+    Response = {
+      status: 401,
+      message: "Unauthorized: Authentication is required and has failed or has not yet been provided."
+    };
+  } else if (status === '403') {
+    Response = {
+      status: 403,
+      message: "Forbidden: The request was valid, but the server is refusing action."
+    };
+  } else if (status === '404') {
+    Response = {
+      status: 404,
+      message: "Not Found: The server has not found anything matching the request URI. This is often caused by a missing page or resource."
+    };
+  } else if (status === '405') {
+    Response = {
+      status: 405,
+      message: "Method Not Allowed: The method specified is not allowed for the resource."
+    };
+  } else if (status === '429') {
+    Response = {
+      status: 429,
+      message: "Too Many Requests: The user has sent too many requests in a given amount of time."
+    };
+  } else if (status === '500') {
+    Response = {
+      status: 500,
+      message: "Internal Server Error: The server encountered an unexpected condition that prevented it from fulfilling the request."
+    };
+  } else if (status === '502') {
+    Response = {
+      status: 502,
+      message: "Bad Gateway: The server received an invalid response from the upstream server."
+    };
+  } else if (status === '503') {
+    Response = {
+      status: 503,
+      message: "Service Unavailable: The server is not ready to handle the request."
+    };
+  } else if (status === '504') {
+    Response = {
+      status: 504,
+      message: "Gateway Timeout: The server didn't get a response in time from another server."
+    };
+  }else {
+    Response = {
+      status: 400,
+      message: "Invalid status code provided. Please use a supported HTTP status code."
+    };
+  } 
 
-- For 500 (Internal Server Error):
-  Request: /status-info?code=500
-  Response:
-  {
-    "status": 500,
-    "message": "Internal Server Error: The server encountered an unexpected condition that prevented it from fulfilling the request."
-  }
+  return res.json({Response});
+})
 
-- For 400 (Bad Request):
-  Request: /status-info?code=400
-  Response:
-  {
-    "status": 400,
-    "message": "Bad Request: The server cannot process the request due to client-side errors (e.g., malformed syntax)."
-  }
 
-List of Status Codes to Handle:
-200, 201, 204, 400, 401, 403, 404, 405, 429, 500, 502, 503, 504
-*/
+app.get('/assistant/greet/',async(req,res)=>{
+
+  try{
+  const name = req.query.name;  
+  if(!name){
+
+    return res.status(400).json({
+      status:400,
+      message:"Bad Request: Name is required!"
+    })    
+  }
+  const welcomeMessage = `Hello, ${name}! Welcome to our assistant app!`
+
+  return res.json({
+    status:200,
+    welcomeMessage
+  });
+
+}
+catch(error){
+  return res.status().send({error:"Error Smtg has occured!!"})
+}
+
+})
+
 
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Status Code API is running on http://localhost:${PORT}`);
 });
+
